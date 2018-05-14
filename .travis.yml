@@ -33,12 +33,12 @@ before_script:
   - curl -i http://localhost:12000
   # Install gems for rspec tests
   - gem install bundler
-  - bundle install --gemfile=tests-rspec/Gemfile
+  - bundle install --gemfile=tests/rspec/Gemfile
 
 script:
   #- phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml
-  - cd tests-rspec && bundle exec rspec *.rb
+  - cd tests/rspec && bundle exec rspec *.rb
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
