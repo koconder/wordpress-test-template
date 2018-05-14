@@ -23,21 +23,30 @@ matrix:
     - php: nightly
     - php: hhvm
 
+cache: bundler
+
 before_script:
+  # Get home directory
+  - testslocation="$PWD"
+
   # Install composer packages before trying to activate themes or plugins
   # - composer install
+
+  # Install Wordpress testing suite and run wordpress
   - git clone https://github.com/Koodimonni/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
+
   # Test wordpress
   - curl -i http://localhost:12000
-  # Install gems for rspec tests
+
+  # Install gems for rspec tests and run
   - gem install bundler
-  - bundle install --gemfile=wp-tests/tests-rspec/Gemfile
+  - bundle install --gemfile=$PWD/wp-tests/tests-rspec/Gemfile
 
 script:
   #- phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml
-  - cd wp-tests/tests-rspec && bundle exec rspec *.rb
+  - bundle exec rspec $PWD/wp-tests/tests-rspec/*.rb
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
