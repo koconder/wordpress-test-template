@@ -29,6 +29,8 @@ before_script:
   # - composer install
   - git clone https://github.com/Koodimonni/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
+  # Test wordpress
+  - curl -i http://localhost:12000
   # Install gems for rspec tests
   - gem install bundler
   - bundle install --gemfile=tests-rspec/Gemfile
@@ -36,5 +38,4 @@ before_script:
 script:
   #- phpcs --standard=WordPress ./**/*.php
   - phpunit
-  - cd tests-rspec && bundle exec rspec test.rb
-  
+  - cd tests-rspec && bundle exec rspec *.rb
