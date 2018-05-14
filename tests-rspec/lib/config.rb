@@ -39,7 +39,7 @@ Capybara.register_driver :poltergeist do |app|
     debug: false,
     js_errors: false, # Use true if you are really careful about your site
     phantomjs_logger: '/dev/null', 
-    timeout: 200,
+    timeout: 400,
     :phantomjs_options => [
        '--webdriver-logfile=/dev/null',
        '--load-images=no',
