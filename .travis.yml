@@ -38,13 +38,14 @@ before_script:
 
   # Install gems for rspec tests and run
   - gem install bundler
-  - bundle install --gemfile=wp-tests/tests-rspec/Gemfile
+  - bundle install --gemfile=wp-tests/spec/Gemfile
 
 script:
   #- phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml
-  - bundle exec rspec wp-tests/tests-rspec/*.rb
+  - cd wp-tests/spec && bundle exec rspec *.rb
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+  - bash <(curl -s https://codecov.io/bash)
