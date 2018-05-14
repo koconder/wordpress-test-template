@@ -30,7 +30,7 @@ before_script:
   # - composer install
 
   # Install Wordpress testing suite and run wordpress
-  - git clone https://github.com/Koodimonni/wordpress-test-template wp-tests
+  - git clone https://github.com/koconder/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
   # Test wordpress
