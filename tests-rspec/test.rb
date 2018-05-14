@@ -17,7 +17,7 @@ require_relative 'lib/matchers.rb'
 RSpec.configure do |config|
   config.include Capybara::DSL
   config.verbose_retry = true
-  config.default_retry_count = 1
+  config.default_retry_count = 3
 end
 
 Capybara.configure do |config|
@@ -30,7 +30,7 @@ Capybara.register_driver :poltergeist do |app|
     debug: false,
     js_errors: false, # Use true if you are really careful about your site
     phantomjs_logger: '/dev/null', 
-    timeout: 60,
+    timeout: 200,
     :phantomjs_options => [
        '--webdriver-logfile=/dev/null',
        '--load-images=no',
