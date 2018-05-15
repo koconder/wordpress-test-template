@@ -166,8 +166,8 @@ link_this_project() {
     for i in "${!WP_PLUGINLIST_LOOP[@]}"
     do
         echo "WP-CLI Installing and Activating additional plugin ($i) ${WP_PLUGINLIST_LOOP[i]}"
-        php wp-cli plugin install $i=>${WP_PLUGINLIST_LOOP[i]}
-        php wp-cli plugin activate $i=>${WP_PLUGINLIST_LOOP[i]}
+        php wp-cli plugin install ${WP_PLUGINLIST_LOOP[i]}
+        php wp-cli plugin activate ${WP_PLUGINLIST_LOOP[i]}
     done
   fi  
 
