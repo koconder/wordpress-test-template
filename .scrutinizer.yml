@@ -13,19 +13,28 @@ build:
                     - composer require --dev johnpbloch/wordpress
 checks:
     php:
-        fix_php_opening_tag: false
-        remove_php_closing_tag: false
-        no_mixed_inline_html: false
-        require_braces_around_control_structures: false
-        psr2_control_structure_declaration: false
-        avoid_superglobals: false
-        security_vulnerabilities: false
-        no_exit: false
-        coding_standard:
-            name: WordPress
+    avoid_closing_tag: false
+    avoid_superglobals: false
+    coding_standard:
+      name: WordPress
+    no_exit: false
+    no_global_keyword: false
+    one_class_per_file: false
+    psr2_class_declaration: false
+    psr2_control_structure_declaration: false
+    psr2_switch_declaration: false
+    variable_existence: false
+    verify_access_scope_valid: false
+    verify_argument_usable_as_reference: false
+    verify_property_names: false
+    fix_php_opening_tag: false
+    remove_php_closing_tag: false
+    no_mixed_inline_html: false
+    require_braces_around_control_structures: false
+    security_vulnerabilities: false
     javascript: true
 filter:
   excluded_paths:
     - tests/
   dependency_paths:
-    - wordpress/
+    - /tmp/wordpress/
