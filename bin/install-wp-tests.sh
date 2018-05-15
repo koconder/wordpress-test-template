@@ -18,6 +18,11 @@ DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
 
+# Use this for plugin names to install for co-dependency
+# https://developer.wordpress.org/cli/commands/plugin/install/
+# Will be seperated by ";", example "plugin1;plugin2"
+WP_PLUGINLIST=${WP_PLUGINLIST-false}
+
 # Use this for installing wordpress siteurl
 WP_TEST_URL=${WP_TEST_URL-http://localhost:12000}
 
@@ -152,7 +157,24 @@ link_this_project() {
   cd $DIR
   local FOLDER_PATH=$(dirname $DIR)
   local FOLDER_NAME=$(basename $FOLDER_PATH)
+
+  # Pre-cursor plugins and themes
+  if [ ${WP_PLUGINLIST} = "false" ]; then
+    echo "WP-CLI Skipping additional plugin installs"
+  else
+    WP_PLUGINLIST_LOOP=(${WP_PLUGINLIST//;/ })
+    for i in "${!WP_PLUGINLIST_LOOP[@]}"
+    do
+        echo "WP-CLI Installing and Activating additional plugin $i=>${WP_PLUGINLIST_LOOP[i]}"
+        php wp-cli plugin install $i=>${WP_PLUGINLIST_LOOP[i]}
+        php wp-cli plugin activate $i=>${WP_PLUGINLIST_LOOP[i]}
+    done
+  fi  
+
+
+  # Install and activate plugin or theme to test
   case $WP_PROJECT_TYPE in
+    echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE $FOLDER_NAME for testing"
     'plugin' )
         ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
         php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
