@@ -103,7 +103,7 @@ install_test_suite() {
     mkdir -p $WP_TESTS_DIR
     svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR
   fi
-
+177
   if [ ! -f wp-tests-config.php ]; then
     download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
     # remove all forward slashes in the end
@@ -173,8 +173,8 @@ link_this_project() {
 
 
   # Install and activate plugin or theme to test
+  echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE $FOLDER_NAME for testing"
   case $WP_PROJECT_TYPE in
-    echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE $FOLDER_NAME for testing"
     'plugin' )
         ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
         php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
