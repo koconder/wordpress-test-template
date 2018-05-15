@@ -103,7 +103,7 @@ install_test_suite() {
     mkdir -p $WP_TESTS_DIR
     svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR
   fi
-177
+
   if [ ! -f wp-tests-config.php ]; then
     download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
     # remove all forward slashes in the end
