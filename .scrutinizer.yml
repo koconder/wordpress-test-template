@@ -1,38 +1,35 @@
 tools:
-  php_code_sniffer:
-    config:
-      standard: WordPress
-  sensiolabs_security_checker: true
-  external_code_coverage:
-    timeout: 2500
+    sensiolabs_security_checker: true
+    external_code_coverage:
+        timeout: 2500
 build:
     nodes:
         analysis:
             dependencies:
                 before:
-                    - composer require --dev johnpbloch/wordpress
+                    - 'composer require --dev johnpbloch/wordpress'
+            tests:
+                override:
+                    -
+                        command: phpcs-run
+                        use_website_config: true
+                    - php-scrutinizer-run
+
 checks:
     php:
-    avoid_closing_tag: false
-    avoid_superglobals: false
-    coding_standard:
-      name: WordPress
-    no_exit: false
-    no_global_keyword: false
-    one_class_per_file: false
-    psr2_class_declaration: false
-    psr2_control_structure_declaration: false
-    psr2_switch_declaration: false
-    variable_existence: false
-    verify_access_scope_valid: false
-    verify_argument_usable_as_reference: false
-    verify_property_names: false
-    fix_php_opening_tag: false
-    remove_php_closing_tag: false
-    no_mixed_inline_html: false
-    require_braces_around_control_structures: false
-    security_vulnerabilities: false
-    javascript: true
+        avoid_closing_tag: false
+        avoid_superglobals: false
+        no_exit: false
+        psr2_control_structure_declaration: false
+        variable_existence: false
+        verify_access_scope_valid: false
+        verify_argument_usable_as_reference: false
+        verify_property_names: false
+        fix_php_opening_tag: false
+        remove_php_closing_tag: false
+        no_mixed_inline_html: false
+        require_braces_around_control_structures: false
+        security_vulnerabilities: false
 filter:
   excluded_paths:
     - tests/
