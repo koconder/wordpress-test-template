@@ -27,6 +27,12 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.verbose_retry = true
   config.default_retry_count = 3
+  config.display_try_failure_messages = true
+
+  # run retry only on features
+  config.around :each, :js do |ex|
+    ex.run_with_retry retry: 3
+  end
 end
 
 Capybara.configure do |config|
