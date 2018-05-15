@@ -1,5 +1,9 @@
-# Wordpress Testing Template
-Template for using travis in your wordpress projects.
+# Wordpress CI Testing Template
+
+[![Build Status](https://travis-ci.org/koconder/wordpress-test-template.svg?branch=master)](https://travis-ci.org/koconder/wordpress-test-template)
+
+Template for using Travis CI with PHPUnit, PHPCodeSniffer, and Rspec tests in your wordpress projects.
+
 ## Configuration
 ### Travis Enviromental variables
 
