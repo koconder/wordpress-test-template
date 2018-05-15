@@ -36,10 +36,6 @@ before_script:
   # Test wordpress
   - curl -i http://localhost:12000
 
-  # Install gems for rspec tests and run
-  - gem install bundler
-  - bundle install --gemfile=wp-tests/spec/Gemfile
-
 script:
   #- phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml

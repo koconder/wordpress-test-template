@@ -42,26 +42,24 @@ download() {
   fi
 }
 
-if [[ $WP_VERSION =~ [0-9]+\.[0-9]+(\.[0-9]+)? ]]; then
-  WP_TESTS_TAG="tags/$WP_VERSION"
-elif [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
-  WP_TESTS_TAG="trunk"
-else
-  # http serves a single offer, whereas https serves multiple. we only want one
-  download http://api.wordpress.org/core/version-check/1.7/ /tmp/wp-latest.json
-  grep '[0-9]+\.[0-9]+(\.[0-9]+)?' /tmp/wp-latest.json
-  LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
-  if [[ -z "$LATEST_VERSION" ]]; then
-    echo "Latest WordPress version could not be found"
-    exit 1
-  fi
-  WP_TESTS_TAG="tags/$LATEST_VERSION"
-fi
-
-set -ex
-
-
 install_wp() {
+  if [[ $WP_VERSION =~ [0-9]+\.[0-9]+(\.[0-9]+)? ]]; then
+    WP_TESTS_TAG="tags/$WP_VERSION"
+  elif [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
+    WP_TESTS_TAG="trunk"
+  else
+    # http serves a single offer, whereas https serves multiple. we only want one
+    download http://api.wordpress.org/core/version-check/1.7/ /tmp/wp-latest.json
+    #grep '[0-9]+\.[0-9]+(\.[0-9]+)?' /tmp/wp-latest.json
+    LATEST_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
+    if [[ -z "$LATEST_VERSION" ]]; then
+      echo "Latest WordPress version could not be found"
+      exit 1
+    fi
+    echo "Latest WordPress version found $LATEST_VERSION"
+    WP_TESTS_TAG="tags/$LATEST_VERSION"
+  fi
+
   if [ -d $WP_CORE_DIR ]; then
     return;
   fi
