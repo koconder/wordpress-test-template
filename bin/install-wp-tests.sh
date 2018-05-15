@@ -96,18 +96,30 @@ install_test_suite() {
   if [ ! -d $WP_TESTS_DIR ]; then
     # set up testing suite
     mkdir -p $WP_TESTS_DIR
-    svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/ $WP_TESTS_DIR
+    svn co --quiet https://develop.svn.wordpress.org/${WP_TESTS_TAG}/tests/phpunit/includes/ $WP_TESTS_DIR
   fi
 
   if [ ! -f wp-tests-config.php ]; then
-    download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php "$WP_TESTS_DIR"/wp-tests-config.php
+    download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
     # remove all forward slashes in the end
-    WP_CORE_DIR=$(echo $WP_CORE_DIR | sed "s:/\+$::")
-    sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR/':" "$WP_TESTS_DIR"/wp-tests-config.php
-    sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" "$WP_TESTS_DIR"/wp-tests-config.php
-    sed $ioption "s/yourusernamehere/$DB_USER/" "$WP_TESTS_DIR"/wp-tests-config.php
-    sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
-    sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
+    sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+    sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+    sed $ioption "s/yourusernamehere/$DB_USER/" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+    sed $ioption "s/yourpasswordhere/$DB_PASS/" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+    sed $ioption "s|localhost|${DB_HOST}|" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+  fi
+
+  # Install real wp-config.php too
+  cd $WP_CORE_DIR
+
+  if [ ! -f wp-config.php ]; then
+    mv wp-config-sample.php wp-config.php
+    sed $ioption "s/database_name_here/$DB_NAME/" $WP_CORE_DIR/wp-config.php
+    sed $ioption "s/username_here/$DB_USER/" $WP_CORE_DIR/wp-config.php
+    sed $ioption "s/password_here/$DB_PASS/" $WP_CORE_DIR/wp-config.php
+    sed $ioption "s|localhost|${DB_HOST}|" $WP_CORE_DIR/wp-config.php
+    # Use different prefix for integration tests
+    sed $ioption "s|^.*\$table_prefix.*$|\$table_prefix  = 'integ_';|" $WP_CORE_DIR/wp-config.php
   fi
 }
 
