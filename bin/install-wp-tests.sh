@@ -166,8 +166,8 @@ link_this_project() {
     for i in "${!WP_PLUGINLIST_LOOP[@]}"
     do
         echo "WP-CLI Installing and Activating additional plugin ($i) ${WP_PLUGINLIST_LOOP[i]}"
-        php wp-cli.phar plugin install ${WP_PLUGINLIST_LOOP[i]}
-        php wp-cli.phar plugin activate ${WP_PLUGINLIST_LOOP[i]}
+        php wp-cli.phar plugin install ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR
+        php wp-cli.phar plugin activate ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR
     done
   fi  
 
