@@ -1,8 +1,9 @@
 # Wordpress CI Testing Template
 
-[![Build Status](https://travis-ci.org/koconder/wordpress-test-template.svg?branch=master)](https://travis-ci.org/koconder/wordpress-test-template)
+[![Build Status](https://travis-ci.org/koconder/wordpress-test-template.svg?branch=master)](https://travis-ci.org/koconder/wordpress-test-template) [![codecov](https://codecov.io/gh/koconder/wordpress-test-template/branch/master/graph/badge.svg)](https://codecov.io/gh/koconder/wordpress-test-template)
 
 Template for using Travis CI with PHPUnit, PHPCodeSniffer, and Rspec tests in your wordpress projects.
+Built on the previous work by Koodimonni, also based on testing libraries from wp-cli/wp-cli and woocommerce/woocommerce
 
 ## Configuration
 ### Travis Enviromental variables
