@@ -39,6 +39,8 @@ Capybara.configure do |config|
   config.javascript_driver = :poltergeist
   config.default_driver = :poltergeist # Tests can be more faster with rack::test.
 end
+
+Capybara.default_wait_time = 5
  
 Capybara.register_driver :poltergeist do |app|
   Capybara::Poltergeist::Driver.new(app, 

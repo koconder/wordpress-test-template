@@ -90,7 +90,7 @@ module WP
   # Checks if user exists
   def self.user?
     ( self.getUser != nil )
-  end
+  end 
 
   # These functions are used for creating custom user for tests
   def self.createUser
@@ -99,8 +99,8 @@ module WP
     end
 
     # We can create tests which check the user name too
-    firstname = ENV['WP_TEST_USER_FIRSTNAME'] || 'Seravo'
-    lastname = ENV['WP_TEST_USER_LASTNAME'] || 'Test User'
+    firstname = ENV['WP_TEST_USER_FIRSTNAME'] || 'test'
+    lastname = ENV['WP_TEST_USER_LASTNAME'] || 'test'
 
     if ENV['WP_TEST_USER'] and ENV['WP_TEST_USER_PASS']
       username = ENV['WP_TEST_USER']
@@ -110,7 +110,7 @@ module WP
       system "wp user delete testbotuser --yes --skip-themes --skip-plugins > /dev/null 2>&1"
       username = "seravotest"
       password = rand(36**32).to_s(36)
-      system "wp user create #{username} noreply@seravo.fi --user_pass=#{password} --role=administrator --first_name='#{firstname}' --last_name='#{lastname}' --skip-themes --skip-plugins  > /dev/null 2>&1"
+      system "wp user create #{username} noreply@test.test --user_pass=#{password} --role=administrator --first_name='#{firstname}' --last_name='#{lastname}' --skip-themes --skip-plugins  > /dev/null 2>&1"
       unless $?.success?
         system "wp user update #{username} --user_pass=#{password} --role=administrator --skip-themes --skip-plugins --require=#{File.dirname(__FILE__)}/disable-wp-mail.php > /dev/null 2>&1"
       end
@@ -231,8 +231,8 @@ module WP
     elsif command? 'wp' and `wp core is-installed`
       target_url = `wp option get home --skip-themes --skip-plugins`.strip
     else
-      puts "WARNING: Can't find configured site. Using 'http://localhost' instead."
-      target_url = "http://localhost"
+      puts "WARNING: Can't find configured site. Using 'http://localhost:12000' instead."
+      target_url = "http://localhost:12000"
     end
 
     URI(target_url)

@@ -26,6 +26,11 @@ describe "WordPress: #{WP.siteurl} - ", :type => :request, :js => true do
       expect(page).to have_css
     end
 
+    # Example: Check that page has javascript
+    it "Page includes javascript" do
+      expect(page).to have_js
+    end
+
     ### Add customised business critical frontend tests here #####
     
   end

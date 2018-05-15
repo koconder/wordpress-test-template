@@ -41,7 +41,7 @@ script:
   - phpunit --coverage-clover=coverage.xml
   
   # Run rspec tests
-  - cd wp-tests/spec && bundle exec rspec *.rb
+  - cd wp-tests/spec && bundle exec rspec baseline.rb
 
   # Syntax check all php files and fail for any error text in STDERR
   - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
