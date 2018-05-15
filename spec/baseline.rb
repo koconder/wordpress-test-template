@@ -18,16 +18,16 @@ describe "WordPress: #{WP.siteurl} - ", :type => :request, :js => true do
       visit WP.siteurl('/')
     end
 
-    it "Healthy status code 200, 301, 302, 503" do
+    it "Healthy status code 200, 301, 302, 503", :retry_on_failure do
       expect(page).to have_status_of [200,301,302,503]
     end
 
-    it "Page includes stylesheets" do
+    it "Page includes stylesheets", :retry_on_failure do
       expect(page).to have_css
     end
 
     # Example: Check that page has javascript
-    it "Page includes javascript" do
+    it "Page includes javascript", :retry_on_failure do
       expect(page).to have_js
     end
 
@@ -42,7 +42,8 @@ describe "WordPress: #{WP.siteurl} - ", :type => :request, :js => true do
       visit WP.siteurl('/wp-login.php')
     end
 
-    it "There's a login form" do
+
+    it "There's a login form", :retry_on_failure do
       expect(page).to have_id "wp-submit"
     end
 

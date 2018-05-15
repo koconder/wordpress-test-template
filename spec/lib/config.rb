@@ -28,11 +28,6 @@ RSpec.configure do |config|
   config.verbose_retry = true
   config.default_retry_count = 3
   #config.display_try_failure_messages = true
-
-  # run retry only on features
-  config.around :each, :js do |ex|
-    ex.run_with_retry retry: 3
-  end
 end
 
 Capybara.configure do |config|
@@ -77,6 +72,7 @@ RSpec.configure do |config|
   # Also in production we need to pass shadow cookie to route the requests to right container
   ##
   config.before(:each) {
+
     page.driver.add_header("User-Agent", "Wordpress Test Bot")
     page.driver.add_header("Pragma", "no-cache")
 
