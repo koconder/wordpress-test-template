@@ -35,32 +35,33 @@ describe "WordPress: #{WP.siteurl} - ", :type => :request, :js => true do
     
   end
 
-  describe "admin-panel" do
+#  
+#  describe "admin-panel" do
+#
+#    before do
+#      #Our sites always have https on
+#      visit WP.siteurl('/wp-login.php')
+#    end
 
-    before do
-      #Our sites always have https on
-      visit WP.siteurl('/wp-login.php')
-    end
 
-
-    it "There's a login form", :retry_on_failure do
-      expect(page).to have_id "wp-submit"
-    end
+#    it "There's a login form", :retry_on_failure do
+#      expect(page).to have_id "wp-submit"
+#    end
 
     #Only run these if we could create random test user
     # Only run these if we could create a test user
-    if WP.user?
-      it "Logged in to WordPress Dashboard" do
-        within("#loginform") do
-          fill_in 'log', :with => WP.user.username
-          fill_in 'pwd', :with => WP.user.password
-        end
-        click_button 'wp-submit'
-        # Should obtain cookies and be able to visit /wp-admin
-        expect(page).to have_id "wpadminbar"
-      end
-    end
+#    if WP.user?
+#      it "Logged in to WordPress Dashboard" do
+#        within("#loginform") do
+#          fill_in 'log', :with => WP.user.username
+#          fill_in 'pwd', :with => WP.user.password
+#        end
+#        click_button 'wp-submit'
+#        # Should obtain cookies and be able to visit /wp-admin
+#        expect(page).to have_id "wpadminbar"
+#      end
+#    end
 
-  end
+#  end
  
 end
