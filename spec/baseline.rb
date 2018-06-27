@@ -1,6 +1,8 @@
 ##
 # This file includes Rspec tests for WordPress
 ##
+require 'coveralls'
+Coveralls.wear!
 
 require_relative 'lib/config.rb'
 
