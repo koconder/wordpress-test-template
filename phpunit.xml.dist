@@ -6,6 +6,9 @@
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
   >
+  <logging>
+      <log type="coverage-clover" target="clover.xml"/>
+  </logging>
   <php>
     <!-- Enter the name of your main plugin file here -->
     <env name="PLUGIN_FILE" value="plugin.php"/>
