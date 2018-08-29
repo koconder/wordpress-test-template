@@ -27,6 +27,14 @@ before_script:
   # Install composer packages before trying to activate themes or plugins
   # - composer install
 
+  # Reconfigure PHPUnit Testing for Travis CI using older version
+  # https://core.trac.wordpress.org/ticket/43218
+  # https://make.wordpress.org/core/handbook/testing/automated-testing/phpunit/#running-the-test-suite
+  - wget https://phar.phpunit.de/phpunit-6.5.phar
+  - chmod +x phpunit-6.5.phar
+  - sudo mv phpunit-6.5.phar /usr/local/bin/phpunit
+  - phpunit --version
+
   # Install Wordpress testing suite and run wordpress
   - git clone https://github.com/koconder/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
