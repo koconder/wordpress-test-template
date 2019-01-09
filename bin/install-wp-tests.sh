@@ -176,12 +176,15 @@ link_this_project() {
   echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE $FOLDER_NAME for testing"
   case $WP_PROJECT_TYPE in
     'plugin' )
-        ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
+        #ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
+        cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
         php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
+        php wp-cli.phar plugin list --path=$WP_CORE_DIR
         ;;
     'theme' )
         ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
         php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR
+        php wp-cli.phar theme list --path=$WP_CORE_DIR
         ;;
   esac
 }
