@@ -17,6 +17,6 @@ Thumbs.db
 *.gem
 *.rbc
 /.config
-/coverage/
+*/coverage/*
 coverage.xml
 .rvmrc
