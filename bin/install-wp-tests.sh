@@ -194,9 +194,12 @@ link_this_project() {
 		fi
 		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
 		php wp-cli.phar plugin list --path=$WP_CORE_DIR
+    php wp-cli.phar theme install twentytwelve --activate
 		;;
 	'theme')
 		cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
+    cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
+		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
 		php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR
 		php wp-cli.phar theme list --path=$WP_CORE_DIR
 		;;
@@ -224,10 +227,10 @@ start_server() {
 }
 
 run_phpcs() {
-	pear config-set auto_discover 1
+	#pear config-set auto_discover 1
 	#pear install PHP_CodeSniffer
 	git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
-	#phpenv rehash
+	phpenv rehash
 	npm install -g jshint
 	phpcs --config-set installed_paths $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
 	phpcs -i

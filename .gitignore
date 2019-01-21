@@ -8,6 +8,10 @@
 ehthumbs.db
 Thumbs.db
 
+# PHP                #
+######################
+/vendor/*
+
 # Logs and databases #
 ######################
 *.log

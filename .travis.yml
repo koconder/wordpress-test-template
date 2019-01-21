@@ -23,20 +23,17 @@ matrix:
 
 cache: bundler
 
-before_install:
+before_script:
   # Speed up build time by disabling Xdebug.
   # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
   # https://twitter.com/kelunik/status/954242454676475904
   - phpenv config-rm xdebug.ini || echo 'No xdebug config.'
   - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
-  # Install PHP CodeSniffer.
+
+  # Install composer packages before trying to activate themes or plugins
   - composer self-update
   - composer install
   - phpenv rehash
-
-before_script:
-  # Install composer packages before trying to activate themes or plugins
-  # - composer install
 
   # Reconfigure PHPUnit Testing for Travis CI using older version
   # https://core.trac.wordpress.org/ticket/43218
@@ -50,11 +47,12 @@ before_script:
   - git clone https://github.com/koconder/wordpress-test-template wp-tests
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
-  # Test wordpress
+  # Test Wordpress is Loading Fine
   - curl -i http://localhost:12000
 
 script:
-  #- phpcs --standard=WordPress ./**/*.php
+  # Run PHP Unit and Wordpress Standards Tests
+  - phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml
   
   # Run rspec tests
