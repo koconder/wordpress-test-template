@@ -1,0 +1,3 @@
+[submodule "boilerplate-dummy-plugin"]
+	path = boilerplate-dummy-plugin
+	url = https://github.com/koconder/wordpress-test-dummyplugin
