@@ -180,9 +180,9 @@ link_this_project() {
 	echo "WP-CLI Installing and Activating core $FOLDER_NAME ($WP_PROJECT_TYPE) for testing"
   # If we are running on the base code with no plugin, use the dummy plugin which is bundled
   if [ $FOLDER_NAME = "wordpress-test-template" ]; then
-    cp -rf $FOLDER_PATH/test-plugin/boilerplate-dummy-plugin/ {$WP_CORE_DIR}wp-content/plugins/boilerplate-dummy-plugin/
+    cp -rf $FOLDER_PATH/test-plugin/boilerplate-dummy-plugin/ $WP_CORE_DIR/wp-content/plugins/boilerplate-dummy-plugin/
   else
-    cp -rf $FOLDER_PATH {$WP_CORE_DIR}wp-content/plugins/
+    cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
   fi
 
 	case $WP_PROJECT_TYPE in
