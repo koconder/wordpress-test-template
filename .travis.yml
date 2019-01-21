@@ -55,7 +55,7 @@ before_script:
 
 script:
   # Run PHP Unit and Wordpress Standards Tests
-  - phpcs --standard=WordPress ./**/*.php
+  #- phpcs --standard=WordPress ./**/*.php
   - phpunit --coverage-clover=coverage.xml
   
   # Run rspec tests
