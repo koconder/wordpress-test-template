@@ -1,17 +1,30 @@
-
 {
     "name": "koconder/wordpress-test-template",
     "description": "Unit Testing and Travis CI template for Wordpress Plugins and Wordpress Installations",
-    "keywords": ["wordpress", "plugin", "travis-ci", "travis", "ci", "unit test", "testing", "phpunit", "phpcs", "wpcli"],
-    "homepage": "https://github.com/koconder/wordpress-test-template",  
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "travis-ci",
+        "travis",
+        "ci",
+        "unit test",
+        "testing",
+        "phpunit",
+        "phpcs",
+        "wpcli"
+    ],
+    "homepage": "https://github.com/koconder/wordpress-test-template",
     "license": "Apache-2.0",
     "authors": [
         {
-			"name": "Contributors",
-			"homepage": "https://github.com/koconder/wordpress-test-template/graphs/contributors"
-		}
+            "name": "Contributors",
+            "homepage": "https://github.com/koconder/wordpress-test-template/graphs/contributors"
+        }
     ],
     "require": {
         "php": ">=5.5"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.*"
     }
 }

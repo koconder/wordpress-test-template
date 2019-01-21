@@ -158,6 +158,16 @@ link_this_project() {
   local FOLDER_PATH=$(dirname $DIR)
   local FOLDER_NAME=$(basename $FOLDER_PATH)
 
+  # Debug output for diagnoising issues with Travis CI
+  echo "+------------------+---------------------------+"
+  echo "+ Variable         + Output                    "
+  echo "+------------------+---------------------------+"
+  echo "+ FOLDER_PATH      + $FOLDER_PATH"
+  echo "+ FOLDER_NAME      + $FOLDER_NAME"
+  echo "+ WP_PROJECT_TYPE  + $WP_PROJECT_TYPE"
+  echo "+ WP_CORE_DIR      + $WP_CORE_DIR"
+  echo "+------------------+---------------------------+"
+
   # Pre-cursor plugins and themes
   if [ ${WP_PLUGINLIST} = "false" ]; then
     echo "WP-CLI Skipping additional plugin installs"
@@ -173,7 +183,8 @@ link_this_project() {
 
 
   # Install and activate plugin or theme to test
-  echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE $FOLDER_NAME for testing"
+  echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE :: $FOLDER_NAME for testing"
+
   case $WP_PROJECT_TYPE in
     'plugin' )
         #ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
