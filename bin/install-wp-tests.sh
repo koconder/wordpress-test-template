@@ -159,6 +159,8 @@ link_this_project() {
 	local FOLDER_NAME=$(basename $FOLDER_PATH)
 
 	# Debug output for diagnoising issues with Travis CI
+  which composer
+  composer diag
 	echo "+ FOLDER_PATH      + $FOLDER_PATH"
 	echo "+ FOLDER_NAME      + $FOLDER_NAME"
 	echo "+ WP_PROJECT_TYPE  + $WP_PROJECT_TYPE"
@@ -212,8 +214,8 @@ install_real_wp() {
 }
 
 install_rspec_requirements() {
-	gem update --system
-	gem install bundler
+	gem update --system -​-silent
+	gem install bundler -​-silent
 	bundle install --quiet --gemfile=$DIR/spec/Gemfile
 }
 
