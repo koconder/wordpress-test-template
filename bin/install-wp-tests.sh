@@ -227,13 +227,13 @@ start_server() {
 }
 
 run_phpcs() {
-	#pear config-set auto_discover 1
-	#pear install PHP_CodeSniffer
-	#git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
-	#phpenv rehash
-	#npm install -g jshint
-	#phpcs --config-set installed_paths $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
-	#phpcs -i
+	pear config-set auto_discover 1
+	pear install PHP_CodeSniffer
+	git clone git://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards.git $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+	phpenv rehash
+	npm install -g jshint
+	phpcs --config-set installed_paths $(pear config-get php_dir)/PHP/CodeSniffer/Standards/WordPress
+	phpcs -i
 }
 
 install_wp
@@ -243,4 +243,4 @@ install_real_wp
 link_this_project
 install_rspec_requirements
 start_server
-run_phpcs
+#run_phpcs
