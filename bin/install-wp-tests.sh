@@ -159,14 +159,10 @@ link_this_project() {
 	local FOLDER_NAME=$(basename $FOLDER_PATH)
 
 	# Debug output for diagnoising issues with Travis CI
-	echo "+------------------+---------------------------+"
-	echo "+ Variable         + Output                    "
-	echo "+------------------+---------------------------+"
 	echo "+ FOLDER_PATH      + $FOLDER_PATH"
 	echo "+ FOLDER_NAME      + $FOLDER_NAME"
 	echo "+ WP_PROJECT_TYPE  + $WP_PROJECT_TYPE"
 	echo "+ WP_CORE_DIR      + $WP_CORE_DIR"
-	echo "+------------------+---------------------------+"
 
 	# Pre-cursor plugins and themes
 	if [ ${WP_PLUGINLIST} = "false" ]; then
@@ -181,25 +177,25 @@ link_this_project() {
 	fi
 
 	# Install and activate plugin or theme to test
-	echo "WP-CLI Installing and Activating core $WP_PROJECT_TYPE :: $FOLDER_NAME for testing"
+	echo "WP-CLI Installing and Activating core $FOLDER_NAME ($WP_PROJECT_TYPE) for testing"
+  # If we are running on the base code with no plugin, use the dummy plugin which is bundled
+  if [ $FOLDER_NAME = "wordpress-test-template" ]; then
+    cp -rf $FOLDER_PATH/test-plugin/boilerplate-dummy-plugin/ {$WP_CORE_DIR}wp-content/plugins/boilerplate-dummy-plugin/
+  else
+    cp -rf $FOLDER_PATH {$WP_CORE_DIR}wp-content/plugins/
+  fi
 
 	case $WP_PROJECT_TYPE in
 	'plugin')
 		#ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
-		# If we are running on the base code with no plugin, use the dummy plugin which is bundled
-		if [ $FOLDER_NAME = "wordpress-test-template" ]; then
-			cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
-		else
-			cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
-		fi
 		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
 		php wp-cli.phar plugin list --path=$WP_CORE_DIR
-    php wp-cli.phar theme install twentytwelve --activate
+    #php wp-cli.phar theme install twentytwelve --activate
 		;;
 	'theme')
 		cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
     cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
-		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
+		#php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
 		php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR
 		php wp-cli.phar theme list --path=$WP_CORE_DIR
 		;;
