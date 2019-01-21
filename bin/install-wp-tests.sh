@@ -188,7 +188,7 @@ link_this_project() {
 		#ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
 		# If we are running on the base code with no plugin, use the dummy plugin which is bundled
 		if [ $FOLDER_NAME = "wordpress-test-template" ]; then
-			cp -rf $FOLDER_PATH/test-plugin/ $WP_CORE_DIR/wp-content/plugins/
+			cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
 		else
 			cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
 		fi
