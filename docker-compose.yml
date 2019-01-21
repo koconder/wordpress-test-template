@@ -1,0 +1,27 @@
+version: "2"
+services:
+    wordpress:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8888:80"
+        depends_on:
+            - db
+        environment:
+            WORDPRESS_DB_HOST: "db:3306"
+        env_file: .env
+        volumes:
+          - .:/var/www/html/wp-content/plugins/plugin
+          - for-testing:/tmp
+    db:
+        image: mysql:latest
+        env_file: .env
+        volumes:
+            - db-data:/var/lib/mysql
+
+volumes:
+    db-data:
+        driver: local
+    for-testing:
+        driver: local
