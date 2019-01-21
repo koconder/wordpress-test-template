@@ -1,5 +1,6 @@
 <?php
-/*
+
+/**
  * Plugin Name: Wordpress Test Template Plugin
  * Version: 1.0.0
  * Description: Dummy plugin to pass wordpress testing
@@ -11,8 +12,14 @@
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl-3.0
 */
+
+/**
+ * Wordpress Test Template function
+ *
+ * @return bool
+ */
 function wordpresstesttemplate(){
 	return true;
 }
-//dummy plugin test
+
 wordpresstesttemplate();
