@@ -177,12 +177,17 @@ link_this_project() {
   case $WP_PROJECT_TYPE in
     'plugin' )
         #ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
-        cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
+        # If we are running on the base code with no plugin, use the dummy plugin which is bundled
+        if [ $FOLDER_NAME = "wordpress-test-template" ]; then
+          cp -rf $FOLDER_PATH/test-plugin/ $WP_CORE_DIR/wp-content/plugins/
+        else
+          cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
+        fi
         php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
         php wp-cli.phar plugin list --path=$WP_CORE_DIR
         ;;
     'theme' )
-        ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
+        cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
         php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR
         php wp-cli.phar theme list --path=$WP_CORE_DIR
         ;;
