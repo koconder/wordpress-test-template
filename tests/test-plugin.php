@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class PluginTest
+ *
+ * @package DummyPlugin
+ */
 class PluginTest extends WP_UnitTestCase {
 
   // Check that that activation doesn't break
@@ -7,4 +12,3 @@ class PluginTest extends WP_UnitTestCase {
     $this->assertTrue( is_plugin_active( PLUGIN_PATH ) );
   }
 }
-
