@@ -159,8 +159,8 @@ link_this_project() {
 	local FOLDER_NAME=$(basename $FOLDER_PATH)
 
 	# Debug output for diagnoising issues with Travis CI
-  which composer
-  composer diag
+  #which composer
+  #composer diag
 	echo "+ FOLDER_PATH      + $FOLDER_PATH"
 	echo "+ FOLDER_NAME      + $FOLDER_NAME"
 	echo "+ WP_PROJECT_TYPE  + $WP_PROJECT_TYPE"
