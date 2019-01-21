@@ -23,6 +23,16 @@ matrix:
 
 cache: bundler
 
+before_install:
+  # Speed up build time by disabling Xdebug.
+  # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
+  # https://twitter.com/kelunik/status/954242454676475904
+  - phpenv config-rm xdebug.ini || echo 'No xdebug config.'
+  # Install PHP CodeSniffer.
+  - composer self-update
+  - composer install
+  - phpenv rehash
+
 before_script:
   # Install composer packages before trying to activate themes or plugins
   # - composer install
