@@ -21,11 +21,29 @@
             "homepage": "https://github.com/koconder/wordpress-test-template/graphs/contributors"
         }
     ],
-    "require": {
-        "php": ">=5.5"
+	"require": {
+		"php": ">=5.4"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+		"phpcompatibility/php-compatibility": "^9.0",
+		"phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+	},
+	"suggest": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically."
     },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "3.*",
-        "phpunit/phpunit":"~5.5.0"
-    }
+	"scripts": {
+		"check-cs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcs"
+		],
+		"fix-cs": [
+			"@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf"
+		],
+		"install-codestandards": [
+			"Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
+		],
+		"run-tests": [
+			"@php ./vendor/phpunit/phpunit/phpunit --filter WordPress --bootstrap=\"./vendor/squizlabs/php_codesniffer/tests/bootstrap.php\" ./vendor/squizlabs/php_codesniffer/tests/AllTests.php"
+		]
+	}
 }
