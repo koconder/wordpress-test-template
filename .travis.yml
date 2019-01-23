@@ -1,5 +1,10 @@
 # Travis CI Configuration file
 # @link https://travis-ci.org/
+# Based on works from:
+# - https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/blob/develop/.travis.yml
+# - https://github.com/Yoast/wordpress-seo/blob/trunk/.travis.yml
+# - https://github.com/ampproject/amp-wp/blob/develop/.travis.yml
+#
 language: php
 dist: trusty
 sudo: false
@@ -115,11 +120,10 @@ before_script:
 script:
   # Run rspec tests
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
-  # Syntax check all php files and fail for any error text in STDERR
-  #- '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-
+  
   # Lint all PHP files against parse errors.
   - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
+
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
   - if [[ "$PHPLINT" == "1" ]]; then composer validate --no-check-all --strict; fi
