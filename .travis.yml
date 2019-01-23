@@ -21,6 +21,7 @@ cache:
 env:
   global:
     - PATH=~/.composer/vendor/bin:vendor/bin:$PATH
+  matrix:
     - WP_PROJECT_TYPE=plugin
     - WP_VERSION=latest
     - WP_MULTISITE=0
@@ -47,6 +48,9 @@ matrix:
         
   allow_failures:
     - php: nightly
+
+git:
+  depth: 1
 
 before_script:
   # Increase PHP Memory
