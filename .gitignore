@@ -11,6 +11,7 @@ Thumbs.db
 # PHP & Wordpress    #
 ######################
 /vendor/*
+/wpcs/*
 wp-cli.phar*
 *.phar
 /docker/html/*

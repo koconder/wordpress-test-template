@@ -82,6 +82,8 @@ git:
   depth: 1
 
 before_install:
+  # Echo Location
+  - echo $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   # Increase PHP Memory
   - echo "memory_limit=2048M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   
@@ -94,20 +96,21 @@ before_install:
   # Install PHPCS, Coveralls and PHPUnit
   - if [[ $COVERALLS_VERSION != "notset" ]]; then composer require php-coveralls/php-coveralls:${COVERALLS_VERSION}; fi
   - composer require squizlabs/php_codesniffer:${PHPCS_VERSION}
+  - if [[ "$SNIFF" == "1" ]]; then composer create-project wp-coding-standards/wpcs --no-dev; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../wpcs; fi
+  - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp:*; fi
   - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
 
   # --no-dev makes sure the Travis provided version of PHPUnit is used for better stability.
   # --prefer-dist will allow for optimal use of the travis caching ability.
   - composer install --no-dev --prefer-dist
 
-
-
 before_script:
   - phpenv rehash
 
   # Install Wordpress testing suite and run wordpress
-  - git clone https://github.com/koconder/wordpress-test-template wp-tests
-  - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
+  - git clone https://github.com/koconder/wordpress-test-template wptest
+  - bash wptest/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
   # Run rspec tests
@@ -127,7 +130,7 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Check the code style of the code base.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1; fi
+  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1; fi
   # Validate the xml file.
   # @link http://xmlsoft.org/xmllint.html
   - if [[ "$SNIFF" == "1" ]]; then xmllint --noout ./PHPCompatibility/ruleset.xml; fi
