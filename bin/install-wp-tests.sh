@@ -17,9 +17,11 @@ if [ -f /.dockerenv ]; then
 	rm -rf /tmp/wordpress*
 	rm -rf /var/www/html/
 	WP_CORE_DIR=${WP_CORE_DIR-/var/www/html/}
+	WP_TEST_URL=${WP_TEST_URL-http://localhost:8000}
 else
 	ENV_DOCKER=${ENV_DOCKER-false};
 	WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
+	WP_TEST_URL=${WP_TEST_URL-http://localhost:12000}
 fi
 
 DB_NAME=$1
@@ -35,18 +37,11 @@ SKIP_DB_CREATE=${6-false}
 # Will be seperated by ";", example "plugin1;plugin2"
 WP_PLUGINLIST=${WP_PLUGINLIST-false}
 
-# Use this for installing wordpress siteurl
-WP_TEST_URL=${WP_TEST_URL-http://localhost:12000}
-
-# Get port from url
 WP_PORT=${WP_TEST_URL##*:}
-
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib/includes}
-
-# Use these credentials for installing wordpress
-# Default test/test
 WP_TEST_USER=${WP_TEST_USER-test}
 WP_TEST_USER_PASS=${WP_TEST_USER_PASS-test}
+WP_PROJECT_TYPE=${WP_PROJECT_TYPE-plugin}
 
 set -ex
 
@@ -166,6 +161,16 @@ install_db() {
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
+# Install databases with wp-cli
+install_real_wp() {
+	cd $DIR
+	download https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
+	if [ ${SKIP_DB_CREATE} = "true" ]; then
+		return 0
+	fi
+	php wp-cli.phar core install --url=$WP_TEST_URL --title='Test' --admin_user=$WP_TEST_USER --admin_password=$WP_TEST_USER_PASS --admin_email="$WP_TEST_USER@wordpress.dev" --path=$WP_CORE_DIR --allow-root
+}
+
 link_this_project() {
 	cd $DIR
 
@@ -225,16 +230,6 @@ link_this_project() {
 	esac
 }
 
-# Install databases with wp-cli
-install_real_wp() {
-	cd $DIR
-	download https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
-	if [ ${SKIP_DB_CREATE} = "true" ]; then
-		return 0
-	fi
-	php wp-cli.phar core install --url=$WP_TEST_URL --title='Test' --admin_user=$WP_TEST_USER --admin_password=$WP_TEST_USER_PASS --admin_email="$WP_TEST_USER@wordpress.dev" --path=$WP_CORE_DIR --allow-root
-}
-
 install_rspec_requirements() {
 	gem update --system --quiet
 	gem install bundler --quiet
@@ -246,9 +241,15 @@ start_server() {
 	cd $WP_CORE_DIR
 	# Start it in background
 	if [ -f /.dockerenv ]; then
-		return 0
+		PID=`ps -eaf | grep php-fpm | grep -v grep | awk '{print $2}'`
+		if [[ "" !=  "$PID" ]]; then echo "killing $PID"
+			ps -ef | grep "php-fpm" | grep -v grep | awk '{print $2}' | xargs kill -9
+		fi
+		#php-fpm &>/dev/null &
+		php-fpm
+	else
+		php -S 0.0.0.0:$WP_PORT router.php &
 	fi
-	php -S 0.0.0.0:$WP_PORT router.php &
 }
 
 run_phpcs() {

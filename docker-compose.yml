@@ -24,7 +24,15 @@ services:
         image: koconder/wordpress-test-dockerimages:${PHP_VERSION}
         restart: always
         env_file:
-            - ".env"
+            - .env
+        environment:
+            - WP_VERSION={$WP_VERSION}
+            - WP_PLUGINLIST=${WP_PLUGINLIST}
+        ports:
+            - "12001:12000"
+        command: bash -c "cd /root/wptest && bin/install-wp-tests.sh test root root mysqldb latest"
+        stdin_open: true
+        tty: true
         volumes:
             - "./docker/php.ini:/usr/local/etc/php/conf.d/php.ini"
             - "./docker/:/var/www/"
@@ -50,7 +58,7 @@ services:
         container_name: ${MYSQL_HOST}
         restart: always
         env_file:
-            - ".env"
+            - .env
         environment:
             - MYSQL_DATABASE=${MYSQL_DATABASE}
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -58,5 +66,5 @@ services:
             - MYSQL_PASSWORD=${MYSQL_PASSWORD}
         ports:
             - "8989:3306"
-        volumes:
-            - "./docker/etc/db/mysql:/var/lib/mysql"
+        #volumes:
+        #    - "./docker/etc/db/mysql:/var/lib/mysql"
