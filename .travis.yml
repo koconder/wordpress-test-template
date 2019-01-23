@@ -101,12 +101,11 @@ before_script:
 script:
   # Run rspec tests
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
-
   # Syntax check all php files and fail for any error text in STDERR
   - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
 
   # Run the unit tests.
-  - if [[ "$PHPCS" == "1" ]]; then; phpunit -c phpunit.xml --coverage-clover=coverage.xml; else phpunit -c phpunit.xml; fi
+  - if [[ "$PHPCS" == "1" ]]; then phpunit -c phpunit.xml --coverage-clover=coverage.xml; else phpunit -c phpunit.xml; fi
 
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
@@ -115,5 +114,5 @@ script:
 
 after_success:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - if [[ "$PHPCS" == "1" ]]; then; php ocular.phar code-coverage:upload --format=php-clover coverage.xml; fi
+  - if [[ "$PHPCS" == "1" ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.xml; fi
   - bash <(curl -s https://codecov.io/bash)
