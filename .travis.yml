@@ -21,7 +21,8 @@ cache:
 env:
   global:
     - PATH=~/.composer/vendor/bin:vendor/bin:$PATH
-    - WP_PROJECT_TYPE=plugin - WP_VERSION=latest
+    - WP_PROJECT_TYPE=plugin
+    - WP_VERSION=latest
     - WP_MULTISITE=0
     - WP_TEST_URL=http://localhost:12000
     - WP_TEST_USER=test
