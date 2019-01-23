@@ -57,7 +57,7 @@ jobs:
       env: WP_VERSION=4.8 WP_MULTISITE=1 PHPLINT=1
 
     - php: nightly
-      env: WP_VERSION=master
+      env: WP_VERSION=latest
 
   allow_failures:
     - php: nightly
