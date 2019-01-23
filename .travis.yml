@@ -87,10 +87,7 @@ before_script:
   - PHPUNIT_BIN="phpunit"
   - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then PHPUNIT_BIN="vendor/bin/phpunit"; fi
   - if [[ $TRAVIS_PHP_VERSION == "5.2" || $TRAVIS_PHP_VERSION == "5.3" ]]; then phpenv local 5.6.13; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then 
-    composer require phpunit/phpunit ^5.7 --ignore-platform-reqs
-    fi
-  - |
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require phpunit/phpunit ^5.7 --ignore-platform-reqs; fi
 
   # Install composer packages before trying to activate themes or plugins
   - composer self-update
@@ -109,12 +106,7 @@ script:
   - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
 
   # Run the unit tests.
-  - if [[ "$PHPCS" == "1" ]]; then
-      phpunit -c phpunit.xml --coverage-clover=coverage.xml
-    else
-      phpunit -c phpunit.xml
-    fi
-  - |
+  - if [[ "$PHPCS" == "1" ]]; then; phpunit -c phpunit.xml --coverage-clover=coverage.xml; else phpunit -c phpunit.xml; fi
 
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
@@ -123,8 +115,5 @@ script:
 
 after_success:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - if [[ "$PHPCS" == "1" ]]; then
-    php ocular.phar code-coverage:upload --format=php-clover coverage.xml
-    fi
-  - |
+  - if [[ "$PHPCS" == "1" ]]; then; php ocular.phar code-coverage:upload --format=php-clover coverage.xml; fi
   - bash <(curl -s https://codecov.io/bash)
