@@ -18,6 +18,7 @@ if [ -f /.dockerenv ]; then
 	rm -rf /var/www/html/
 	WP_CORE_DIR=${WP_CORE_DIR-/var/www/html/}
 	WP_TEST_URL=${WP_TEST_URL-http://localhost:8000}
+	composer require squizlabs/php_codesniffer:2.3.0
 else
 	ENV_DOCKER=${ENV_DOCKER-false};
 	WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}

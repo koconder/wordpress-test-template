@@ -27,18 +27,27 @@ env:
     - WP_TEST_URL=http://localhost:12000
     - WP_TEST_USER=test
     - WP_TEST_USER_PASS=test
+    - COVERALLS_VERSION="notset"
+    - PHPUNIT_VERSION="travis"
+    - PHPCS_VERSION="dev-master" LINT=1
+    - PHPCS_VERSION="2.3.0"
 
 jobs:
   fast_finish: true
   include:
+    # Note: Coverage is only checked on the lowest and highest stable PHP versions for all PHPCS versions.
     - php: 7.3
-      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 PHPCS=1
+      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 PHPCS=1 PHPCS_VERSION="3.3.*"
+      addons:
+        apt:
+          packages:
+            - libxml2-utils
 
     - php: 7.3
-      env: WP_VERSION=5.0 WP_MULTISITE=1 COVERAGE=1
+      env: WP_VERSION=5.0 WP_MULTISITE=1 COVERAGE=1 PHPCS_VERSION="2.3.0" COVERALLS_VERSION="^2.0"
 
     - php: 7.2
-      env: WP_VERSION=5.0
+      env: WP_VERSION=5.0 PHPCS_VERSION="2.3.0" COVERALLS_VERSION="^2.0"
 
     - php: 7.1
       env: WP_VERSION=5.0
@@ -58,15 +67,15 @@ jobs:
     - php: 5.3
       # As 'trusty' is not supporting PHP 5.2/5.3 anymore, we need to force using 'precise'.
       dist: precise
-      env: WP_VERSION=5.0
+      env: WP_VERSION=5.0 PHPCS_VERSION="2.3.0" COVERALLS_VERSION="^1.0" PHPUNIT_VERSION="~4.5"
 
     - php: 5.2
       # As 'trusty' is not supporting PHP 5.2/5.3 anymore, we need to force using 'precise'.
       dist: precise
-      env: WP_VERSION=4.8 WP_MULTISITE=1 PHPLINT=1
+      env: WP_VERSION=4.8 WP_MULTISITE=1 PHPLINT=1 COVERALLS_VERSION="^1.0" PHPUNIT_VERSION="~4.5"
 
     - php: nightly
-      env: WP_VERSION=latest
+      env: WP_VERSION=latest PHPCS_VERSION=">=2.0,<3.0"
 
   allow_failures:
     - php: nightly
@@ -74,7 +83,7 @@ jobs:
 git:
   depth: 1
 
-before_script:
+before_install:
   # Increase PHP Memory
   - echo "memory_limit=2048M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   
@@ -82,16 +91,24 @@ before_script:
   # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
   # https://twitter.com/kelunik/status/954242454676475904
   - if [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
+  - if [[ $COVERALLS_VERSION == "notset" ]]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
 
-  # Fix PHPUnit
-  - PHPUNIT_BIN="phpunit"
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then PHPUNIT_BIN="vendor/bin/phpunit"; fi
-  - if [[ $TRAVIS_PHP_VERSION == "5.2" || $TRAVIS_PHP_VERSION == "5.3" ]]; then phpenv local 5.6.13; fi
-  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require phpunit/phpunit ^5.7 --ignore-platform-reqs; fi
+  # Install PHPCS, Coveralls and PHPUnit
+  - if [[ $COVERALLS_VERSION != "notset" ]]; then composer require php-coveralls/php-coveralls:${COVERALLS_VERSION}; fi
+  - composer require squizlabs/php_codesniffer:${PHPCS_VERSION}
+  - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
+  
+  # Configure Wordpress Coding Standards
+  
 
-  # Install composer packages before trying to activate themes or plugins
-  - composer self-update
-  - composer install
+  # --no-dev makes sure the Travis provided version of PHPUnit is used for better stability.
+  # --prefer-dist will allow for optimal use of the travis caching ability.
+  - composer install --no-dev --prefer-dist
+
+
+
+before_script:
+  - if [[ $COVERALLS_VERSION != "notset" ]]; then mkdir -p build/logs; fi
   - phpenv rehash
 
   # Install Wordpress testing suite and run wordpress
@@ -104,15 +121,32 @@ script:
   # Syntax check all php files and fail for any error text in STDERR
   #- '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
 
-  # Run the unit tests.
-  - if [[ "$PHPCS" == "1" ]]; then phpunit -c phpunit.xml --coverage-clover=coverage.xml; else phpunit -c phpunit.xml; fi
-
+  # Lint all PHP files against parse errors.
+  - if [[ "$LINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
   - if [[ "$LINT" == "1" ]]; then composer validate --no-check-all --strict; fi
 
+  # Run the unit tests.
+  - if [[ $PHPUNIT_VERSION == "travis" && $COVERALLS_VERSION != "notset" ]]; then phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml; fi
+  - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION != "notset" ]]; then vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml; fi
+  - if [[ $PHPUNIT_VERSION == "travis" && $COVERALLS_VERSION == "notset" ]]; then phpunit; fi
+  - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
+
+  # Check the code style of the code base.
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1; fi
+  # Validate the xml file.
+  # @link http://xmlsoft.org/xmllint.html
+  - if [[ "$SNIFF" == "1" ]]; then xmllint --noout ./PHPCompatibility/ruleset.xml; fi
+  # Check the code-style consistency of the xml files.
+  - if [[ "$SNIFF" == "1" ]]; then diff -B ./PHPCompatibility/ruleset.xml <(xmllint --format "./PHPCompatibility/ruleset.xml"); fi
+  # Validate the composer.json file.
+  # @link https://getcomposer.org/doc/03-cli.md#validate
+  - if [[ "$LINT" == "1" ]]; then composer validate --no-check-all; fi
 
 after_success:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - if [[ "$PHPCS" == "1" ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.xml; fi
+  - if [[ $COVERALLS_VERSION == "^1.0" ]]; then php vendor/bin/coveralls -v -x build/logs/clover.xml; fi
+  - if [[ $COVERALLS_VERSION == "^2.0" ]]; then php vendor/bin/php-coveralls -v -x build/logs/clover.xml; fi
+  - if [[ "$PHPCS" == "1" ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
   - bash <(curl -s https://codecov.io/bash)
