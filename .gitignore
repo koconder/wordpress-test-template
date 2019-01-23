@@ -8,9 +8,16 @@
 ehthumbs.db
 Thumbs.db
 
-# PHP                #
+# PHP & Wordpress    #
 ######################
 /vendor/*
+wp-cli.phar*
+*.phar
+/docker/html/*
+
+# Docker             #
+######################
+/docker/etc/*
 
 # Logs and databases #
 ######################

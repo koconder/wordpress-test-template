@@ -10,6 +10,18 @@ if [ $# -lt 3 ]; then
 	exit 1
 fi
 
+# If Docker
+if [ -f /.dockerenv ]; then
+    echo "Docker Container Detected"
+	ENV_DOCKER=${ENV_DOCKER-true}
+	rm -rf /tmp/wordpress*
+	rm -rf /var/www/html/
+	WP_CORE_DIR=${WP_CORE_DIR-/var/www/html/}
+else
+	ENV_DOCKER=${ENV_DOCKER-false};
+	WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
+fi
+
 DB_NAME=$1
 DB_USER=$2
 DB_PASS=$3
@@ -30,7 +42,6 @@ WP_TEST_URL=${WP_TEST_URL-http://localhost:12000}
 WP_PORT=${WP_TEST_URL##*:}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib/includes}
-WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
 
 # Use these credentials for installing wordpress
 # Default test/test
@@ -40,11 +51,11 @@ WP_TEST_USER_PASS=${WP_TEST_USER_PASS-test}
 set -ex
 
 download() {
-	if [ $(which curl) ]; then
-		curl -s "$1" >"$2"
-	elif [ $(which wget) ]; then
-		wget -nv -O "$2" "$1"
-	fi
+    if [ `which curl` ]; then
+        curl -s "$1" > "$2";
+    elif [ `which wget` ]; then
+        wget -nv -O "$2" "$1"
+    fi
 }
 
 install_wp() {
@@ -105,7 +116,7 @@ install_test_suite() {
 	fi
 
 	if [ ! -f wp-tests-config.php ]; then
-		download https://develop.svn.wordpress.org/${WP_TESTS_TAG}/wp-tests-config-sample.php $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
+		download https://develop.svn.wordpress.org/trunk/wp-tests-config-sample.php $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
 		# remove all forward slashes in the end
 		sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
 		sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" $(dirname ${WP_TESTS_DIR})/wp-tests-config.php
@@ -131,6 +142,8 @@ install_test_suite() {
 install_db() {
 	if [ ${SKIP_DB_CREATE} = "true" ]; then
 		return 0
+	elif [ -f /.dockerenv ]; then
+		return 0
 	fi
 
 	# parse DB_HOST for port or socket references
@@ -155,12 +168,18 @@ install_db() {
 
 link_this_project() {
 	cd $DIR
-	local FOLDER_PATH=$(dirname $DIR)
-	local FOLDER_NAME=$(basename $FOLDER_PATH)
+
+	if [ -f /.dockerenv ]; then
+		local FOLDER_PATH="/root/wptest"
+		local FOLDER_NAME="wordpress-test-template"
+	else
+		local FOLDER_PATH=$(dirname $DIR)
+		local FOLDER_NAME=$(basename $FOLDER_PATH)
+	fi
 
 	# Debug output for diagnoising issues with Travis CI
-  #which composer
-  #composer diag
+	#which composer
+	#composer diag
 	echo "+ FOLDER_PATH      + $FOLDER_PATH"
 	echo "+ FOLDER_NAME      + $FOLDER_NAME"
 	echo "+ WP_PROJECT_TYPE  + $WP_PROJECT_TYPE"
@@ -173,35 +192,35 @@ link_this_project() {
 		WP_PLUGINLIST_LOOP=(${WP_PLUGINLIST//;/ })
 		for i in "${!WP_PLUGINLIST_LOOP[@]}"; do
 			echo "WP-CLI Installing and Activating additional plugin ($i) ${WP_PLUGINLIST_LOOP[i]}"
-			php wp-cli.phar plugin install ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR
-			php wp-cli.phar plugin activate ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR
+			php wp-cli.phar plugin install ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR --allow-root
+			php wp-cli.phar plugin activate ${WP_PLUGINLIST_LOOP[i]} --path=$WP_CORE_DIR --allow-root
 		done
 	fi
 
 	# Install and activate plugin or theme to test
 	echo "WP-CLI Installing and Activating core $FOLDER_NAME ($WP_PROJECT_TYPE) for testing"
-  # If we are running on the base code with no plugin, use the dummy plugin which is bundled
-  if [ $FOLDER_NAME = "wordpress-test-template" ]; then
-    ls -lah $FOLDER_PATH
-    cp -rf $FOLDER_PATH/test-plugin/boilerplate-dummy-plugin/ $WP_CORE_DIR/wp-content/plugins/boilerplate-dummy-plugin/
-  else
-    cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
-  fi
-  ls -lah $WP_CORE_DIR/wp-content/plugins/
+	# If we are running on the base code with no plugin, use the dummy plugin which is bundled
+	if [ $FOLDER_NAME = "wordpress-test-template" ]; then
+    	cp -rf $FOLDER_PATH/test-plugin/boilerplate-dummy-plugin/ $WP_CORE_DIR/wp-content/plugins/boilerplate-dummy-plugin/
+	else
+    	cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/
+	fi
+
+	ls -lah $WP_CORE_DIR/wp-content/plugins/
 
 	case $WP_PROJECT_TYPE in
 	'plugin')
 		#ln -s $FOLDER_PATH $WP_CORE_DIR/wp-content/plugins/$FOLDER_NAME
-		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
-		php wp-cli.phar plugin list --path=$WP_CORE_DIR
-    #php wp-cli.phar theme install twentytwelve --activate
+		php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR --allow-root
+		php wp-cli.phar plugin list --path=$WP_CORE_DIR --allow-root
+    	#php wp-cli.phar theme install twentytwelve --activate
 		;;
 	'theme')
 		cp -rf $FOLDER_PATH $WP_CORE_DIR/wp-content/themes/$FOLDER_NAME
-    cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
+    	cp -rf $FOLDER_PATH/test-plugin $WP_CORE_DIR/wp-content/plugins/
 		#php wp-cli.phar plugin activate --all --path=$WP_CORE_DIR
-		php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR
-		php wp-cli.phar theme list --path=$WP_CORE_DIR
+		php wp-cli.phar theme activate $FOLDER_NAME --path=$WP_CORE_DIR --allow-root
+		php wp-cli.phar theme list --path=$WP_CORE_DIR --allow-root
 		;;
 	esac
 }
@@ -210,7 +229,10 @@ link_this_project() {
 install_real_wp() {
 	cd $DIR
 	download https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar wp-cli.phar
-	php wp-cli.phar core install --url=$WP_TEST_URL --title='Test' --admin_user=$WP_TEST_USER --admin_password=$WP_TEST_USER_PASS --admin_email="$WP_TEST_USER@wordpress.dev" --path=$WP_CORE_DIR
+	if [ ${SKIP_DB_CREATE} = "true" ]; then
+		return 0
+	fi
+	php wp-cli.phar core install --url=$WP_TEST_URL --title='Test' --admin_user=$WP_TEST_USER --admin_password=$WP_TEST_USER_PASS --admin_email="$WP_TEST_USER@wordpress.dev" --path=$WP_CORE_DIR --allow-root
 }
 
 install_rspec_requirements() {
@@ -220,9 +242,12 @@ install_rspec_requirements() {
 }
 
 start_server() {
-	mv $DIR/router.php $WP_CORE_DIR/router.php
+	cp -f $DIR/router.php $WP_CORE_DIR/router.php
 	cd $WP_CORE_DIR
 	# Start it in background
+	if [ -f /.dockerenv ]; then
+		return 0
+	fi
 	php -S 0.0.0.0:$WP_PORT router.php &
 }
 
@@ -241,6 +266,6 @@ install_test_suite
 install_db
 install_real_wp
 link_this_project
-install_rspec_requirements
+#install_rspec_requirements
 start_server
 #run_phpcs
