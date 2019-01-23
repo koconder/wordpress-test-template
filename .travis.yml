@@ -37,6 +37,9 @@ jobs:
     - php: 7.3
       env: WP_VERSION=5.0 WP_MULTISITE=1 COVERAGE=1
 
+    - php: 7.2
+      env: WP_VERSION=5.0
+
     - php: 7.1
       env: WP_VERSION=5.0
 
@@ -44,6 +47,12 @@ jobs:
       env: WP_VERSION=5.0
 
     - php: 5.6
+      env: WP_VERSION=5.0
+
+    - php: 5.5
+      env: WP_VERSION=5.0
+
+    - php: 5.4
       env: WP_VERSION=5.0
 
     - php: 5.3
@@ -74,6 +83,15 @@ before_script:
   # https://twitter.com/kelunik/status/954242454676475904
   - if [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
 
+  # Fix PHPUnit
+  - PHPUNIT_BIN="phpunit"
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then PHPUNIT_BIN="vendor/bin/phpunit"; fi
+  - if [[ $TRAVIS_PHP_VERSION == "5.2" || $TRAVIS_PHP_VERSION == "5.3" ]]; then phpenv local 5.6.13; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then 
+    composer require phpunit/phpunit ^5.7 --ignore-platform-reqs
+    fi
+  - |
+
   # Install composer packages before trying to activate themes or plugins
   - composer self-update
   - composer install
@@ -84,9 +102,6 @@ before_script:
   - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
-  # Run PHP Unit and Wordpress Standards Tests
-  #- phpunit --coverage-clover=coverage.xml
-  
   # Run rspec tests
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
 
@@ -94,7 +109,12 @@ script:
   - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
 
   # Run the unit tests.
-  - phpunit --coverage-clover=coverage.xml
+  - if [[ "$PHPCS" == "1" ]]; then
+      phpunit -c phpunit.xml --coverage-clover=coverage.xml
+    else
+      phpunit -c phpunit.xml
+    fi
+  - |
 
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
@@ -103,5 +123,8 @@ script:
 
 after_success:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+  - if [[ "$PHPCS" == "1" ]]; then
+    php ocular.phar code-coverage:upload --format=php-clover coverage.xml
+    fi
+  - |
   - bash <(curl -s https://codecov.io/bash)
