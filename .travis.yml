@@ -42,7 +42,7 @@ jobs:
   include:
     # Note: Coverage is only checked on the lowest and highest stable PHP versions for all PHPCS versions.
     - php: 7.3
-      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 SNIFF=1 PHPCS_VERSION="3.3.*" PHPUNIT_VERSION="^6.1.0"
+      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 PHPCS_VERSION="3.3.*" PHPUNIT_VERSION="^6.1.0"
       addons:
         apt:
           packages:
@@ -72,7 +72,7 @@ jobs:
     # WP-Cli Minimum PHP version 5.4 and above
 
     - php: nightly
-      env: WP_VERSION=latest PHPCS_VERSION=">=2.0,<3.0"
+      env: WP_VERSION=latest PHPCS_VERSION=">=2.0,<3.0" SNIFF=1
 
   allow_failures:
     - php: nightly
@@ -99,6 +99,7 @@ before_install:
   - if [[ "$SNIFF" == "1" ]]; then composer create-project wp-coding-standards/wpcs --no-dev; fi
   - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../wpcs; fi
   - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp:*; fi
+
   - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
 
   # --no-dev makes sure the Travis provided version of PHPUnit is used for better stability.
