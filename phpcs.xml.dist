@@ -10,6 +10,7 @@
 	<rule ref="PHPCompatibilityWP" />
 
 	<!-- Exclude Common Paths. -->
+    <exclude-pattern>*/wptest/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
     <exclude-pattern>*/PHPCompatibility/Tests/Keywords/ForbiddenNames/*\.php</exclude-pattern>
