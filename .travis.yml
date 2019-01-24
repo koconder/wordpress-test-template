@@ -43,10 +43,6 @@ matrix:
     # Note: Coverage is only checked on the lowest and highest stable PHP versions for all PHPCS versions.
     - php: 7.3
       env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 SNIFF=1 PHPCS_VERSION="3.3.*" PHPUNIT_VERSION="^6.1.0"
-      addons:
-        apt:
-          packages:
-            - libxml2-utils
     - php: 7.3
       env: WP_VERSION=5.0 WP_MULTISITE=1 COVERAGE=1 PHPCS_VERSION="2.3.0" COVERALLS_VERSION="^2.0" PHPUNIT_VERSION="^6.1.0"
     - php: 7.2
@@ -69,6 +65,12 @@ matrix:
   allow_failures:
     - php: nightly
     - php: hhvm
+
+# Install XML Tools for Codecoverage and PHPUnit
+addons:
+  apt:
+    packages:
+      - libxml2-utils
 
 git:
   depth: 1
