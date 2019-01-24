@@ -238,7 +238,7 @@ install_rspec_requirements() {
 }
 
 start_server() {
-	cp -f $DIR/router.php $WP_CORE_DIR/router.php
+	cp -f $DIR/docker/router.php $WP_CORE_DIR/router.php
 	cd $WP_CORE_DIR
 	# Start it in background
 	if [ -f /.dockerenv ]; then
