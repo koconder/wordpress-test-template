@@ -99,7 +99,7 @@ before_install:
   - echo $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   - if [[ "$SNIFF" == "1" ]]; then ls -lah; fi
   - if [[ "$SNIFF" == "1" ]]; then ls -lah vendor; fi
-  - if [[ "$SNIFF" == "1" ]]; /vendor/bin/phpcs -i; fi
+  - if [[ "$SNIFF" == "1" ]]; vendor/bin/phpcs -i; fi
 
 before_script:
   # Reload PHP Configuration
