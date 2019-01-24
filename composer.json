@@ -23,9 +23,5 @@
     ],
 	"require": {
 		"php": ">=5.2",
-        "squizlabs/php_codesniffer": "3.3.*"
-	},
-    "require-dev": {
-        "phpcompatibility/phpcompatibility-wp": "*"
-    }
+	}
 }

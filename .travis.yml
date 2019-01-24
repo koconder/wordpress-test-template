@@ -34,7 +34,7 @@ env:
     - WP_TEST_USER_PASS=test
     - COVERALLS_VERSION="notset"
     - PHPUNIT_VERSION="travis"
-    - PHPCS_VERSION="dev-master" LINT=1
+    - LINT=1
     - PHPCS_VERSION="2.3.0"
 
 matrix:
@@ -82,8 +82,8 @@ before_install:
   # Speed up build time by disabling Xdebug.
   # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
   # https://twitter.com/kelunik/status/954242454676475904
-  - if [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
-  - if [[ $COVERALLS_VERSION == "notset" ]]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
+  #- if [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
+  #- if [[ $COVERALLS_VERSION == "notset" ]]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
 
   # Install PHPCS, Coveralls and PHPUnit
   - if [[ $COVERALLS_VERSION != "notset" ]]; then composer require php-coveralls/php-coveralls:${COVERALLS_VERSION}; fi
