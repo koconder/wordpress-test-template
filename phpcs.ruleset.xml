@@ -5,6 +5,48 @@
 	<rule ref="WordPress-Core" />
 	<rule ref="WordPress-Docs" />
 
+	<!-- Exclude Common Paths. -->
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/PHPCompatibility/Tests/Keywords/ForbiddenNames/*\.php</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/spec/*</exclude-pattern>
+    <exclude-pattern>*/wpcs/*</exclude-pattern>
+
+    <!-- Check up to 8 files simultanously. -->
+    <arg name="parallel" value="8"/>
+
+    <!--
+        PHP cross version compatibility ;-).
+    -->
+    <config name="testVersion" value="5.3-"/>
+    <rule ref="PHPCompatibility">
+        <!-- Exclude PHP constants back-filled by PHPCS 2.3.0+. -->
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_trait_cFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_traitFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_insteadofFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_callableFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_finallyFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_yieldFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_ellipsisFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_powFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_pow_equalFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_coalesceFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_spaceshipFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_yield_fromFound"/>
+        <exclude name="PHPCompatibility.Constants.NewConstants.t_coalesce_equalFound"/>
+    </rule>
+
+    <!--
+        Minimal code style check.
+    -->
+    <rule ref="PSR2">
+        <!-- To address at a later point in time. -->
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+
+        <!-- Ignoring a number of whitespace issues around blank lines. -->
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
+        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
+    </rule>
 </ruleset>

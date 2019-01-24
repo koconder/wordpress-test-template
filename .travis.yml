@@ -4,16 +4,17 @@
 # - https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/blob/develop/.travis.yml
 # - https://github.com/Yoast/wordpress-seo/blob/trunk/.travis.yml
 # - https://github.com/ampproject/amp-wp/blob/develop/.travis.yml
-#
 language: php
 dist: trusty
 sudo: false
 
+# Silence notifications
 notifications:
   on_success: never
   on_failure: change
   email: false
 
+# Cache buildss to speed things up
 cache:
   bundler: true
   apt: true
@@ -23,6 +24,7 @@ cache:
     # Cache directory for more recent Composer versions.
     - $HOME/.cache/composer/files
 
+# Default configuration variables
 env:
   global:
     - PATH=~/.composer/vendor/bin:vendor/bin:$PATH
@@ -62,9 +64,11 @@ matrix:
       env: WP_VERSION=latest PHPCS_VERSION=">=2.0,<3.0" PHPUNIT_VERSION="^6.1.0"
     - php: hhvm
       env: WP_VERSION=latest PHPCS_VERSION=">=2.0,<3.0" PHPUNIT_VERSION="^6.1.0"
+  # Allow un-stable PHP or Wordpress versions to fail
   allow_failures:
     - php: nightly
     - php: hhvm
+    - env: WP_VERSION=latest
 
 # Install XML Tools for Codecoverage and PHPUnit
 addons:
@@ -72,38 +76,33 @@ addons:
     packages:
       - libxml2-utils
 
+# Stop Travis CI Git from pulling old commits
 git:
   depth: 1
 
 before_install:
-  # Echo Location
-  - echo $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   # Increase PHP Memory
   - echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  
-  # Speed up build time by disabling Xdebug.
-  # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
-  # https://twitter.com/kelunik/status/954242454676475904
-  #- if [ "$TRAVIS_PHP_VERSION" != "5.6" ]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
-  #- if [[ $COVERALLS_VERSION == "notset" ]]; then phpenv config-rm xdebug.ini || echo 'No xdebug config.'; fi
 
   # Install PHPCS, Coveralls and PHPUnit
   - if [[ $COVERALLS_VERSION != "notset" ]]; then composer require php-coveralls/php-coveralls:${COVERALLS_VERSION}; fi
   - composer require squizlabs/php_codesniffer:${PHPCS_VERSION}
-  - if [[ "$SNIFF" == "1" ]]; then composer create-project wp-coding-standards/wpcs --no-dev; fi
+  - if [[ "$SNIFF" == "1" ]]; then composer require --dev wp-coding-standards/wpcs; fi
   - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp:*; fi
-
   - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
 
-  # --no-dev makes sure the Travis provided version of PHPUnit is used for better stability.
-  # --prefer-dist will allow for optimal use of the travis caching ability.
-  - composer install --no-dev --prefer-dist
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../wpcs; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../PHPCompatibilityWP; fi
+  # Install Composer Packages and Load PHPCS Libraries if testing
+  - travis_wait composer install --no-dev --prefer-dist --no-suggest
+  - if [[ "$SNIFF" == "1" ]]; then composer run-script install-codestandards; fi
+
+  # Echo Location and Files
+  - echo $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   - if [[ "$SNIFF" == "1" ]]; then ls -lah; fi
   - if [[ "$SNIFF" == "1" ]]; then ls -lah vendor; fi
+  - if [[ "$SNIFF" == "1" ]]; /vendor/bin/phpcs -i; fi
 
 before_script:
+  # Reload PHP Configuration
   - phpenv rehash
 
   # Install Wordpress testing suite and run wordpress
@@ -111,15 +110,15 @@ before_script:
   - bash wptest/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
+  # Validate the composer.json file.
+  - if [[ "$PHPLINT" == "1" ]]; then composer validate --no-check-all --strict; fi
+
+  # Lint all PHP files against parse errors.
+  #- if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -path ./wptest -prune -o -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
+  - if [[ "$PHPLINT" == "1" ]]; then find -L . -type f -name '*.php' -print0 | xargs -0 -n1 -P4 php -l -n | (! grep -v "No syntax errors detected" ); fi
+
   # Run rspec tests
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
-  
-  # Lint all PHP files against parse errors.
-  - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -path ./wptest -prune -o -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
-
-  # Validate the composer.json file.
-  # @link https://getcomposer.org/doc/03-cli.md#validate
-  - if [[ "$PHPLINT" == "1" ]]; then composer validate --no-check-all --strict; fi
 
   # Run the unit tests.
   - if [[ $PHPUNIT_VERSION == "travis" && $COVERALLS_VERSION != "notset" ]]; then phpunit --configuration phpunit.xml --coverage-clover clover.xml; fi
@@ -128,17 +127,17 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Check the code style of the code base.
-  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -p . --standard=PHPCompatibilityWP; fi
+
   # Validate the xml file.
   # @link http://xmlsoft.org/xmllint.html
-  - if [[ "$SNIFF" == "1" ]]; then xmllint --noout ./PHPCompatibility/ruleset.xml; fi
+  #- if [[ "$SNIFF" == "1" ]]; then xmllint --noout ./PHPCompatibility/ruleset.xml; fi
   # Check the code-style consistency of the xml files.
-  - if [[ "$SNIFF" == "1" ]]; then diff -B ./PHPCompatibility/ruleset.xml <(xmllint --format "./PHPCompatibility/ruleset.xml"); fi
-  # Validate the composer.json file.
-  # @link https://getcomposer.org/doc/03-cli.md#validate
-  - if [[ "$PHPLINT" == "1" ]]; then composer validate --no-check-all; fi
+  #- if [[ "$SNIFF" == "1" ]]; then diff -B ./PHPCompatibility/ruleset.xml <(xmllint --format "./PHPCompatibility/ruleset.xml"); fi
 
 after_success:
+  # Submit Code Coverage and 3rd party reports
   - if [[ "$SNIFF" == "1" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
   - if [[ $COVERALLS_VERSION == "^1.0" ]]; then php vendor/bin/coveralls -v -x clover.xml; fi
   - if [[ $COVERALLS_VERSION == "^2.0" ]]; then php vendor/bin/php-coveralls -v -x clover.xml; fi
