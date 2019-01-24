@@ -134,7 +134,7 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Run PHP Coding Standards Checks.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -p .--runtime-set ignore_warnings_on_exit 1 --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/  --standard=PHPCompatibilityWP ; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -p . --runtime-set ignore_warnings_on_exit 1 --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --colors --standard=PHPCompatibilityWP ; fi
 
   # Validate the xml file.
   # @link http://xmlsoft.org/xmllint.html
