@@ -110,7 +110,7 @@ script:
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
   
   # Lint all PHP files against parse errors.
-  - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
+  - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -path ./wptest -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
 
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
