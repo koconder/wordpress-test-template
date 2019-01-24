@@ -135,12 +135,10 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Run PHP Coding Standards Checks.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set ignore_warnings_on_exit 1; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set colors 1; fi
-  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=wptest/ --ignore=vendor/ --ignore=wpcs/ --ignore=docker/ --ignore=spec/ --standard=Wordpress; fi
-  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=wptest/ --ignore=vendor/ --ignore=wpcs/ --ignore=docker/ --ignore=spec/ --standard=Wordpress-Extra; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=wptest/ --ignore=vendor/ --ignore=wpcs/ --ignore=docker/ --ignore=spec/ --standard=PHPCompatibility; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=wptest/ --ignore=vendor/ --ignore=wpcs/ --ignore=docker/ --ignore=spec/ --standard=PHPCompatibilityWP; fi
+  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=Wordpress; fi
+  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=Wordpress-Extra; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=PHPCompatibility; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=PHPCompatibilityWP; fi
 
 after_success:
   # Submit Code Coverage and 3rd party reports
