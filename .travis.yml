@@ -91,7 +91,6 @@ before_install:
   - if [[ $COVERALLS_VERSION != "notset" ]]; then composer require php-coveralls/php-coveralls:${COVERALLS_VERSION}; fi
   - composer require squizlabs/php_codesniffer:${PHPCS_VERSION}
   - if [[ "$SNIFF" == "1" ]]; then composer create-project wp-coding-standards/wpcs --no-dev; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../wpcs; fi
   - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp:*; fi
 
   - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
@@ -99,6 +98,10 @@ before_install:
   # --no-dev makes sure the Travis provided version of PHPUnit is used for better stability.
   # --prefer-dist will allow for optimal use of the travis caching ability.
   - composer install --no-dev --prefer-dist
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../wpcs; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set installed_paths ../PHPCompatibilityWP; fi
+  - if [[ "$SNIFF" == "1" ]]; then ls -lah; fi
+  - if [[ "$SNIFF" == "1" ]]; then ls -lah vendor; fi
 
 before_script:
   - phpenv rehash
@@ -112,7 +115,7 @@ script:
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
   
   # Lint all PHP files against parse errors.
-  - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -path ./wptest -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
+  - if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -path ./wptest -prune -o -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
 
   # Validate the composer.json file.
   # @link https://getcomposer.org/doc/03-cli.md#validate
