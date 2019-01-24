@@ -85,7 +85,7 @@ before_install:
   # Echo Location
   - echo $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   # Increase PHP Memory
-  - echo "memory_limit=2048M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo "memory_limit=512M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   
   # Speed up build time by disabling Xdebug.
   # https://johnblackbourn.com/reducing-travis-ci-build-times-for-wordpress-projects/
