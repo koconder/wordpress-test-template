@@ -111,8 +111,9 @@ before_script:
   # Reload PHP Configuration
   - phpenv rehash
 
-  # Install Wordpress testing suite and run wordpress
+  # Install Wordpress testing suite, copy tests if none and run wordpress
   - git clone https://github.com/koconder/wordpress-test-template wptest
+  - if [ ! -d ./tests ]; then cp -Rf ./wptest/tests ./tests; fi
   - bash wptest/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
