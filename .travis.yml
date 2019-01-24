@@ -93,7 +93,7 @@ before_install:
   #- if [[ "$SNIFF" == "1" ]]; then composer require --dev automattic/vipwpcs; fi
   - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/php-compatibility; fi
   - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-paragonie; fi
-  - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp:*; fi
+  - if [[ "$SNIFF" == "1" ]]; then composer require --dev phpcompatibility/phpcompatibility-wp; fi
   - if [[ $PHPUNIT_VERSION != "travis" ]]; then composer require phpunit/phpunit:${PHPUNIT_VERSION}; fi
 
   # Install Composer Packages and Load PHPCS Libraries if testing
@@ -134,13 +134,12 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Run PHP Coding Standards Checks.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs -p . --runtime-set ignore_warnings_on_exit 1 --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --colors --standard=PHPCompatibilityWP ; fi
-
-  # Validate the xml file.
-  # @link http://xmlsoft.org/xmllint.html
-  #- if [[ "$SNIFF" == "1" ]]; then xmllint --noout ./PHPCompatibility/ruleset.xml; fi
-  # Check the code-style consistency of the xml files.
-  #- if [[ "$SNIFF" == "1" ]]; then diff -B ./PHPCompatibility/ruleset.xml <(xmllint --format "./PHPCompatibility/ruleset.xml"); fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set ignore_warnings_on_exit 1; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set colors 1; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --standard=Wordpress; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --standard=Wordpress-Extra; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --standard=PHPCompatibility; fi
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=/vendor/ --ignore=/wpcs/ --ignore=/docker/ --ignore=/spec/ --standard=PHPCompatibilityWP; fi
 
 after_success:
   # Submit Code Coverage and 3rd party reports

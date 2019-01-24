@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <ruleset name="WordPress Coding Standards for Plugins">
-	<description>Generally-applicable sniffs for WordPress plugins</description>
+	<description>Generally-applicable sniffs for WordPress plugins and theme development</description>
 
+    <!-- Default Rules -->
+	<rule ref="WordPress" />
 	<rule ref="WordPress-Core" />
-	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Extra" />
+	<rule ref="PHPCompatibility" />
+	<rule ref="PHPCompatibilityWP" />
 
 	<!-- Exclude Common Paths. -->
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
@@ -15,38 +19,4 @@
 
     <!-- Check up to 8 files simultanously. -->
     <arg name="parallel" value="8"/>
-
-    <!--
-        PHP cross version compatibility ;-).
-    -->
-    <config name="testVersion" value="5.3-"/>
-    <rule ref="PHPCompatibility">
-        <!-- Exclude PHP constants back-filled by PHPCS 2.3.0+. -->
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_trait_cFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_traitFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_insteadofFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_callableFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_finallyFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_yieldFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_ellipsisFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_powFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_pow_equalFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_coalesceFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_spaceshipFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_yield_fromFound"/>
-        <exclude name="PHPCompatibility.Constants.NewConstants.t_coalesce_equalFound"/>
-    </rule>
-
-    <!--
-        Minimal code style check.
-    -->
-    <rule ref="PSR2">
-        <!-- To address at a later point in time. -->
-        <exclude name="Generic.Files.LineLength.TooLong"/>
-
-        <!-- Ignoring a number of whitespace issues around blank lines. -->
-        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
-        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
-        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
-    </rule>
 </ruleset>
