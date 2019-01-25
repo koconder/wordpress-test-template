@@ -2,9 +2,8 @@ tools:
     php_code_sniffer:
         config:
             standard: WordPress
-        sensiolabs_security_checker: true
-        timeout: 2500
-build:
+    sensiolabs_security_checker: true
+abuild:
     nodes:
         analysis:
             dependencies:
@@ -46,7 +45,7 @@ filter:
         - tests/
         - integration/whichbrowser/
         - docker/
-        - vendor/
         - spec/
     dependency_paths:
         - wordpress/
+        - vendor/
