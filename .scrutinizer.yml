@@ -41,7 +41,6 @@ checks:
         coding_standard:
             name: WordPress
     javascript: true
-    external_code_coverage: true
 filter:
     excluded_paths:
         - tests/
