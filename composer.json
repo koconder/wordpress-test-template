@@ -21,9 +21,6 @@
             "homepage": "https://github.com/koconder/wordpress-test-template/graphs/contributors"
         }
     ],
-	"require": {
-		"php": ">=5.2"
-	},
     "scripts": {
         "install-codestandards": [
             "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
