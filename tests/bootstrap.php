@@ -13,19 +13,21 @@ define('PLUGIN_FOLDER', basename(dirname(__DIR__)));
 define('PLUGIN_PATH', PLUGIN_FOLDER.'/'.PLUGIN_FILE);
 
 // Activates this plugin in WordPress so it can be tested.
-$GLOBALS['wp_tests_options'] = array(
-    'active_plugins' => array( PLUGIN_PATH ),
-);
+//$GLOBALS['wp_tests_options'] = array(
+//    'active_plugins' => array( PLUGIN_PATH ),
+//);
+//Disabled Due to WP-CLI Handling Activations
 
 require_once $_tests_dir . '/includes/functions.php';
 
 /*
  * Activate this plugin automatically
  */
-tests_add_filter('muplugins_loaded', '_manually_load_plugin');
-function _manually_load_plugin() 
-{
-    include dirname(__DIR__) . '/'. PLUGIN_FILE;
-}
+//tests_add_filter('muplugins_loaded', '_manually_load_plugin');
+//function _manually_load_plugin() 
+//{
+//    include dirname(__DIR__) . '/'. PLUGIN_FILE;
+//}
+//Disabled Due to WP-CLI Handling Activations
 
 require $_tests_dir . '/includes/bootstrap.php';
