@@ -3,7 +3,7 @@ tools:
         config:
             standard: WordPress
     sensiolabs_security_checker: true
-abuild:
+build:
     nodes:
         analysis:
             dependencies:
