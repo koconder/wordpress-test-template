@@ -1,9 +1,5 @@
 # Travis CI Configuration file
-# @link https://travis-ci.org/
-# Based on works from:
-# - https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/blob/develop/.travis.yml
-# - https://github.com/Yoast/wordpress-seo/blob/trunk/.travis.yml
-# - https://github.com/ampproject/amp-wp/blob/develop/.travis.yml
+# @link https://github.com/koconder/wordpress-test-template
 language: php
 dist: trusty
 sudo: false
@@ -45,7 +41,7 @@ matrix:
   include:
     # Note: Coverage is only checked on the lowest and highest stable PHP versions for all PHPCS versions.
     - php: 7.3
-      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 SNIFF=1 PHPCS_VERSION="3.3.*" PHPUNIT_VERSION="^6.1.0"
+      env: WP_VERSION=5.0 WP_MULTISITE=1 PHPLINT=1 SNIFF=1 PHPCS_VERSION="3.4" PHPUNIT_VERSION="^6.1.0"
     - php: 7.3
       env: WP_VERSION=5.0 WP_MULTISITE=1 PHPCS_VERSION="2.3.0" COVERALLS_VERSION="^2.0" PHPUNIT_VERSION="^6.1.0"
     - php: 7.2
@@ -122,8 +118,8 @@ script:
 
   # Lint all PHP files against parse errors.
   #- if [[ "$PHPLINT" == "1" ]]; then find -L . -path ./PHPCompatibility/Tests/Keywords/ForbiddenNames -prune -o -path ./vendor -prune -o -path ./wptest -prune -o -path ./wpcs -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
-  - if [[ "$PHPLINT" == "1" ]]; then find -L . -type f -name '*.php' -print | grep -v -e ./vendor -e /wpcs -e /docker -e /spec; fi
-  - if [[ "$PHPLINT" == "1" ]]; then find -L . -type f -name '*.php' -print | grep -v -e ./vendor -e /wpcs -e /docker -e /spec | awk '{printf "%s%c", $0, 0}' | xargs -0 -n1 -P4 php -l -n | (! grep -v "No syntax errors detected" ); fi
+  - if [[ "$PHPLINT" == "1" ]]; then find -L . -type f -name '*.php' -print | grep -v -e ./vendor -e /wpcs -e /wptest -e /bin -e /docker -e /spec; fi
+  - if [[ "$PHPLINT" == "1" ]]; then find -L . -type f -name '*.php' -print | grep -v -e ./vendor -e /wpcs -e /wptest -e /bin -e /docker -e /spec | awk '{printf "%s%c", $0, 0}' | xargs -0 -n1 -P4 php -l -n | (! grep -v "No syntax errors detected" ); fi
 
   # Run rspec tests
   #- cd wp-tests/spec && bundle exec rspec baseline.rb
@@ -135,17 +131,17 @@ script:
   - if [[ $PHPUNIT_VERSION != "travis" && $COVERALLS_VERSION == "notset" ]]; then vendor/bin/phpunit; fi
 
   # Run PHP Coding Standards Checks.
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set ignore_warnings_on_exit 1; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs --config-set colors 1; fi
-  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=Wordpress; fi
-  #- if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=Wordpress-Extra; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=PHPCompatibility; fi
-  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/docker/*,*/spec/* --standard=PHPCompatibilityWP; fi
+  - if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs --config-set ignore_warnings_on_exit 1"; fi
+  - if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs --config-set colors 1"; fi
+  #- if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/spec/*,*/docker/*,*/bin/*,*.css,*.js --standard=Wordpress -v"; fi
+  #- if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/spec/*,*/docker/*,*/bin/*,*.css,*.js--standard=Wordpress-Extra -v"; fi
+  - if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/spec/*,*/docker/*,*/bin/*,*.css,*.js --standard=PHPCompatibility -v"; fi
+  - if [[ "$SNIFF" == "1" ]]; then bash -c "vendor/bin/phpcs . -p --ignore=*/wptest/*,*/vendor/*,*/wpcs/*,*/spec/*,*/docker/*,*/bin/*,*.css,*.js --standard=PHPCompatibilityWP -v"; fi
 
 after_success:
   # Submit Code Coverage and 3rd party reports
-  - if [[ "$SNIFF" == "1" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
+  - if [[ $COVERALLS_VERSION != "notset" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
   - if [[ $COVERALLS_VERSION == "^1.0" ]]; then php vendor/bin/coveralls -v -x clover.xml; fi
   - if [[ $COVERALLS_VERSION == "^2.0" ]]; then php vendor/bin/php-coveralls -v -x clover.xml; fi
-  - if [[ "$SNIFF" == "1" ]]; then php ocular.phar code-coverage:upload --format=php-clover clover.xml; fi
-  - if [[ "$SNIFF" == "1" ]]; then bash <(curl -s https://codecov.io/bash); fi
+  - if [[ $COVERALLS_VERSION != "notset" ]]; then php ocular.phar code-coverage:upload --format=php-clover clover.xml; fi
+  - if [[ $COVERALLS_VERSION != "notset" ]]; then bash <(curl -s https://codecov.io/bash); fi
