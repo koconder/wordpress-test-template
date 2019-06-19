@@ -70,9 +70,8 @@ matrix:
   # Allow un-stable PHP or Wordpress versions to fail
   allow_failures:
     - php: nightly
-      env: WP_VERSION=latest
     - php: hhvm
-      env: WP_VERSION=latest
+    - env: WP_VERSION=latest
     - php: 7.3
       env: WP_VERSION=5.0 PHPCS_VERSION="2.3.0" PHPUNIT_VERSION="^6.1.0"
     - php: 7.3
