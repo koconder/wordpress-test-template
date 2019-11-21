@@ -3,5 +3,5 @@ source 'https://rubygems.org'
 gem 'rspec','3.1.0'
 gem 'rspec-retry'
 gem 'poltergeist', '>= 1.18.1'
-gem 'capybara', '>= 3.25.0'
+gem 'capybara', '>= 3.28.0'
 gem 'coveralls', require: false
