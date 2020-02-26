@@ -23,17 +23,17 @@ GEM
     json (2.2.0)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    nokogiri (1.10.7)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
     public_suffix (4.0.3)
-    rack (2.1.1)
+    rack (2.2.2)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
-    regexp_parser (1.6.0)
+    regexp_parser (1.7.0)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -68,7 +68,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  capybara (>= 3.25.0)
+  capybara (>= 3.31.0)
   coveralls
   poltergeist (>= 1.18.1)
   rspec (= 3.9.0)
