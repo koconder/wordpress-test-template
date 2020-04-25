@@ -23,7 +23,7 @@ GEM
     json (2.3.0)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    nokogiri (1.10.7)
+    nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     poltergeist (1.18.1)
       capybara (>= 2.1, < 4)
