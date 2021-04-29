@@ -1,0 +1,31 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  assignees:
+  - koconder
+- package-ecosystem: bundler
+  directory: "/spec"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  assignees:
+  - koconder
+  ignore:
+  - dependency-name: nokogiri
+    versions:
+    - 1.11.1
+    - 1.11.2
+  - dependency-name: capybara
+    versions:
+    - 3.35.1
+- package-ecosystem: gitsubmodule
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  assignees:
+  - koconder
